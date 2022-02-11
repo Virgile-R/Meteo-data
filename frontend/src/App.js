@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import Main from "./components/Main";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [stations, setStations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedStation, setSelectedStation] = useState(7005);
+
+  function handleChange(e) {
+    setSelectedStation(e.target.value);
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await fetch("http://localhost:8000/stations");
+      const stationArray = await result.json();
+      setStations(stationArray);
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (stations.length > 0) {
+      setIsLoading(false);
+    }
+  }, [stations]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  } else {
+    return (
+      <Main
+        stationList={stations}
+        setSelectedStation={setSelectedStation}
+        selectedStation={selectedStation}
+        handleChange={handleChange}
+      />
+    );
+  }
 }
 
 export default App;

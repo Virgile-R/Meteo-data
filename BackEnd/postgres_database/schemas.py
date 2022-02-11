@@ -1,4 +1,34 @@
+import email
+from os import access
 from pydantic import BaseModel
+
+
+class UserInfoBase(BaseModel):
+    username: str
+    email: str
+    favorite_station: int | None
+
+
+class UserCreate(UserInfoBase):
+    password: str
+
+
+class UserInfo(UserInfoBase):
+    id: int
+
+
+class UserAuthenticate(BaseModel):
+    username: str
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
 
 
 class TemperaturesBase(BaseModel):
