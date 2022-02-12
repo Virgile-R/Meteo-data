@@ -1,7 +1,8 @@
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime, timedelta
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from datetime import timedelta
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 from postgres_database import models, crud, schemas
@@ -9,6 +10,8 @@ from postgres_database.database import SessionLocal, engine
 import os
 models.Base.metadata.create_all(bind=engine)
 load_dotenv()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 app = FastAPI()
 
 
@@ -38,8 +41,10 @@ def read_root():
 
 
 @app.post('/token', response_model=schemas.Token)
-async def login_for_access_token(user: schemas.UserAuthenticate, db: Session = Depends(get_db)):
-    if not crud.check_username_and_password(db, user):
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = crud.check_username_and_password(
+        db, form_data.username, form_data.password)
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -60,6 +65,12 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=400, detail="An account with this email already exists")
     return crud.create_user(db=db, user=user)
+
+
+@app.get("/user", response_model=schemas.UserInfoBase)
+async def return_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    current_user = crud.get_current_user(db, token)
+    return current_user
 
 
 @app.get("/stations")
