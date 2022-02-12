@@ -10,6 +10,7 @@ sqlalchemy = "*"
 psycopg2 = "*"
 bcrypt = "*"
 pyjwt = "*"
+python-multipart = "*"
 
 [dev-packages]
 python-dotenv = "*"

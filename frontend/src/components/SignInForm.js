@@ -17,11 +17,14 @@ function SignInForm({ handleCloseSignIn }) {
     if (form.checkValidity() === false) {
       e.stopPropagation();
     } else {
+      const formData = new FormData();
+      for (const name in inputs) {
+        formData.append(name, inputs[name]);
+      }
       setValidated(true);
       const requestOptions = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(inputs),
+        body: formData,
       };
 
       fetch("http://localhost:8000/token", requestOptions).then((response) => {

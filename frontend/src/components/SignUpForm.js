@@ -80,12 +80,12 @@ function SignUpForm({ stationList, handleCloseRegister }) {
 
           <Form.Select
             required
-            name="preferedStation"
+            name="favorite_station"
             id="stations"
             onChange={handleChange}
-            defaultValue="7005"
+            defaultValue="nostation"
           >
-            <option value="null">Pas de station préférée</option>
+            <option value="nostation">Pas de station préférée</option>
             {stationList.map((station) => {
               return (
                 <option key={station.id} value={station.id}>

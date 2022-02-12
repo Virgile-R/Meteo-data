@@ -8,10 +8,11 @@ from postgres_database import models, schemas
 from dotenv import load_dotenv
 import jwt
 import os
+
 load_dotenv()
 
 
-oath2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -31,9 +32,13 @@ def get_user(db: Session, username: str):
     return db.query(models.UserInfo).filter(models.UserInfo.username == username).first()
 
 
-def check_username_and_password(db: Session, user: schemas.UserAuthenticate):
-    db_user_info: models.UserInfo = get_user(db, username=user.username)
-    return bcrypt.checkpw(user.password.encode('utf-8'), db_user_info.password.encode('utf-8'))
+def check_username_and_password(db: Session, username: str, password: str):
+    db_user_info: models.UserInfo = get_user(db, username)
+    if not db_user_info:
+        return False
+    if not bcrypt.checkpw(password.encode('utf-8'), db_user_info.password.encode('utf-8')):
+        return False
+    return db_user_info
 
 
 def create_jwt_token(*, data: dict, expires_delta: timedelta = None):
@@ -48,23 +53,36 @@ def create_jwt_token(*, data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-async def get_current_user(db: Session, token: str = Depends(oath2_scheme)):
-    credentials_exception = HTTPException(
+def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
+    credentials_exception_not_found = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not find user",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    credentials_exception_invalid = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
         payload = jwt.decode(token, os.getenv(
-            "SECRET_KEY"), algorithm=os.getenv("ALGORITHM"))
-        email: str = payload.get("sub")
-        token_data = schemas.TokenData(email=email)
-        user = get_user(db, email=token_data.email)
+            "SECRET_KEY"), algorithms=[os.getenv("ALGORITHM")])
+        username: str = payload.get("sub")
+
+        token_data = schemas.TokenData(user=username)
+        user = get_user(db, username=token_data.user)
+
         if user is None:
-            raise credentials_exception
+            raise credentials_exception_not_found
         return user
     except jwt.exceptions.InvalidTokenError:
-        raise credentials_exception
+        raise credentials_exception_invalid
+
+
+async def get_current_active_user(current_user: models.UserInfo = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=400, detail="No User")
+    return current_user
 
 
 def get_station(db: Session, station_id: int):

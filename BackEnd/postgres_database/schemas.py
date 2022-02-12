@@ -1,4 +1,4 @@
-import email
+
 from os import access
 from pydantic import BaseModel
 
@@ -6,7 +6,10 @@ from pydantic import BaseModel
 class UserInfoBase(BaseModel):
     username: str
     email: str
-    favorite_station: int | None
+    favorite_station: int
+
+    class Config:
+        orm_mode = True
 
 
 class UserCreate(UserInfoBase):
@@ -28,7 +31,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    email: str | None = None
+    user: str
 
 
 class TemperaturesBase(BaseModel):
