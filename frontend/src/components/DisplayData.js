@@ -6,7 +6,7 @@ function DisplayData({ selectedStation }) {
   useEffect(() => {
     const fetchData = async (selectionStation) => {
       const result = await fetch(
-        `http://localhost:8000/stations/${selectionStation}`
+        `${process.env.REACT_APP_API_URL}/stations/${selectionStation}`
       );
       const stationData = await result.json();
       setStationData(stationData);

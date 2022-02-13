@@ -13,7 +13,7 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await fetch("http://localhost:8000/stations");
+      const result = await fetch(`${process.env.REACT_APP_API_URL}/stations`);
       const stationArray = await result.json();
       setStations(stationArray);
     };

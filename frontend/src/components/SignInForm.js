@@ -28,17 +28,19 @@ function SignInForm({ handleCloseSignIn, setLoggedInUser, setShowLogInToast }) {
         body: formData,
       };
 
-      fetch("http://localhost:8000/token", requestOptions).then((response) => {
-        response
-          .json()
-          .then((response) =>
-            localStorage.setItem("user", JSON.stringify(response))
-          )
-          .finally(() => {
-            setShowLogInToast(true);
-            setLoggedInUser(AuthFunctions.get_current_user());
-          });
-      });
+      fetch(`${process.env.REACT_APP_API_URL}/token`, requestOptions).then(
+        (response) => {
+          response
+            .json()
+            .then((response) =>
+              localStorage.setItem("user", JSON.stringify(response))
+            )
+            .finally(() => {
+              setShowLogInToast(true);
+              setLoggedInUser(AuthFunctions.get_current_user());
+            });
+        }
+      );
       handleCloseSignIn();
     }
   }
