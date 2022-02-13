@@ -3,10 +3,8 @@ import AuthFunctions from "../Auth/auth-functions";
 import Header from "./Header";
 import SearchForm from "./SearchForm";
 import DisplayData from "./DisplayData";
-import SignUpForm from "./SignUpForm";
-import SignInForm from "./SignInForm";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
 function Main({ stationList, selectedStation, handleChange }) {
   const [showRegisterModal, setRegistershowModal] = useState(false);
   const [showSignInModal, setSignInshowModal] = useState(false);
@@ -15,109 +13,127 @@ function Main({ stationList, selectedStation, handleChange }) {
     AuthFunctions.get_current_user()
   );
   const [userInfo, setUserInfo] = useState(null);
+  const [showLogInToast, setShowLogInToast] = useState(false);
+  const [showTimeOutToast, setShowTimeOutToast] = useState(false);
+  const [showAccountCreatedToast, setShowAccountCreatedToast] = useState(false);
+  const [showAccountCreationFailedToast, setShowAccountCreationFailedToast] =
+    useState(false);
+
   const handleCloseRegister = () => setRegistershowModal(false);
   const handleShowRegister = () => setRegistershowModal(true);
   const handleCloseSignIn = () => setSignInshowModal(false);
   const handleShowSignIn = () => setSignInshowModal(true);
   const handleCloseProfile = () => setProfileshowModal(false);
   const handleShowProfile = () => setProfileshowModal(true);
-
+  const logOut = () => {
+    AuthFunctions.logout();
+    setLoggedInUser(null);
+    setUserInfo(null);
+  };
   useEffect(() => {
     if (loggedInUser) {
       fetch("http://localhost:8000/user", {
         method: "Get",
         headers: { Authorization: "Bearer " + loggedInUser.access_token },
       })
-        .catch((err) => console.error(err.message))
-        .then((res) => res.json())
-        .then((data) => setUserInfo(data));
+        .catch((err) => console.error(err))
+        .then((res) => {
+          if (res.status === 401) {
+            console.log("There was an error");
+            logOut();
+          } else {
+            return res.json();
+          }
+        })
+        .then((data) => {
+          setUserInfo(data);
+        });
     }
   }, [loggedInUser]);
-
-  function getFavoriteStationName(station) {
-    return station.id === userInfo.favorite_station;
-  }
 
   return (
     <div className="wrapper">
       <div>
-        <Modal
-          show={showRegisterModal}
-          onHide={handleCloseRegister}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Register</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <SignUpForm
-              stationList={stationList}
-              handleCloseRegister={handleCloseRegister}
-            ></SignUpForm>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseRegister}>
-              Close
-            </Button>
-            <Button
-              as="input"
-              type="submit"
-              value="Submit"
-              form="registerForm"
-            />
-          </Modal.Footer>
-        </Modal>
-
-        <Modal
-          show={showSignInModal}
-          onHide={setProfileshowModal}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Sign In</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <SignInForm handleCloseSignIn={handleCloseSignIn}></SignInForm>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseSignIn}>
-              Close
-            </Button>
-            <Button as="input" type="submit" value="Submit" form="signInForm" />
-          </Modal.Footer>
-        </Modal>
-        {userInfo !== null && (
-          <Modal
-            show={showProfileModal}
-            onHide={handleCloseProfile}
-            backdrop="static"
-            keyboard={false}
+        <ToastContainer position="middle-center">
+          <Toast
+            delay={3000}
+            show={showTimeOutToast}
+            autohide
+            onClose={() => setShowTimeOutToast(false)}
+            bg="warning"
           >
-            <Modal.Header closeButton>
-              <Modal.Title>Username: {userInfo.username}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p>Email : {userInfo.email}</p>
-              <p>
-                Station Favorite:{" "}
-                {stationList.filter(getFavoriteStationName)[0].name}
-              </p>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseProfile}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        )}
+            <Toast.Header>
+              {" "}
+              <strong className="me-auto"> Session expirée</strong>
+            </Toast.Header>
+            <Toast.Body>Veuillez vous reconnecter</Toast.Body>
+          </Toast>
+        </ToastContainer>
+        <ToastContainer position="middle-center">
+          <Toast
+            delay={3000}
+            show={showLogInToast}
+            autohide
+            onClose={() => setShowLogInToast(false)}
+          >
+            <Toast.Header>
+              {" "}
+              <strong className="me-auto"> Bienvenue</strong>
+            </Toast.Header>
+            <Toast.Body>Heureux de vous revoir!</Toast.Body>
+          </Toast>
+        </ToastContainer>
+        <ToastContainer position="middle-center">
+          <Toast
+            delay={3000}
+            show={showAccountCreatedToast}
+            autohide
+            onClose={() => setShowAccountCreatedToast(false)}
+          >
+            <Toast.Header>
+              {" "}
+              <strong className="me-auto"> Compte créé</strong>
+            </Toast.Header>
+            <Toast.Body>Identifiez vous pour continuer.</Toast.Body>
+          </Toast>
+        </ToastContainer>
+        <ToastContainer position="middle-center">
+          <Toast
+            delay={3000}
+            show={showAccountCreationFailedToast}
+            autohide
+            onClose={() => setShowAccountCreationFailedToast(false)}
+            bg="warning"
+          >
+            <Toast.Header>
+              {" "}
+              <strong className="me-auto">
+                {" "}
+                Problème lors de la création du compte
+              </strong>
+            </Toast.Header>
+            <Toast.Body>Veuillez réssayer plus tard</Toast.Body>
+          </Toast>
+        </ToastContainer>
+
         <Header
           handleShowRegister={handleShowRegister}
+          handleCloseRegister={handleCloseRegister}
           handleShowSignIn={handleShowSignIn}
+          handleCloseSignIn={handleCloseSignIn}
           handleShowProfile={handleShowProfile}
+          handleCloseProfile={handleCloseProfile}
+          showProfileModal={showProfileModal}
           loggedInUser={loggedInUser}
           setLoggedInUser={setLoggedInUser}
+          stationList={stationList}
+          showRegisterModal={showRegisterModal}
+          showSignInModal={showSignInModal}
+          userInfo={userInfo}
+          setShowLogInToast={setShowLogInToast}
+          logOut={logOut}
+          setShowAccountCreatedToast={setShowAccountCreatedToast}
+          setShowAccountCreationFailedToast={setShowAccountCreationFailedToast}
         ></Header>
         <SearchForm
           stationList={stationList}

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
+import AuthFunctions from "../Auth/auth-functions";
 
-function SignInForm({ handleCloseSignIn }) {
+function SignInForm({ handleCloseSignIn, setLoggedInUser, setShowLogInToast }) {
   const [inputs, setInputs] = useState({});
   const [validated, setValidated] = useState(false);
 
@@ -32,7 +33,11 @@ function SignInForm({ handleCloseSignIn }) {
           .json()
           .then((response) =>
             localStorage.setItem("user", JSON.stringify(response))
-          );
+          )
+          .finally(() => {
+            setShowLogInToast(true);
+            setLoggedInUser(AuthFunctions.get_current_user());
+          });
       });
       handleCloseSignIn();
     }
@@ -48,10 +53,11 @@ function SignInForm({ handleCloseSignIn }) {
           placeholder="Entrez votre username"
           onChange={handleChange}
         />
+        <Form.Control.Feedback type="invalid">
+          Choississez un nom d'utilisateur.
+        </Form.Control.Feedback>
       </Form.Group>
-      <Form.Control.Feedback type="invalid">
-        Choississez un nom d'utilisateur.
-      </Form.Control.Feedback>
+
       <Form.Group className="mb-3" controlId="formPassword">
         <Form.Label>Password</Form.Label>
         <Form.Control

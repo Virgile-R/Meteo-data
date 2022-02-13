@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 
-function SignUpForm({ stationList, handleCloseRegister }) {
+function SignUpForm({
+  stationList,
+  handleCloseRegister,
+  setShowAccountCreatedToast,
+  setShowAccountCreationFailedToast,
+}) {
   const [inputs, setInputs] = useState({});
   const [validated, setValidated] = useState(false);
 
@@ -11,20 +16,30 @@ function SignUpForm({ stationList, handleCloseRegister }) {
       [e.target.name]: e.target.value,
     }));
   }
+
   function onSubmit(e) {
     const form = e.currentTarget;
-    e.preventDefault();
+
     if (form.checkValidity() === false) {
+      setValidated(false);
       e.stopPropagation();
+      e.preventDefault();
     } else {
-      setValidated(true);
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(inputs),
       };
 
-      fetch("http://localhost:8000/user/signup", requestOptions);
+      fetch("http://localhost:8000/user/signup", requestOptions).then((res) => {
+        if (res.status !== 200) {
+          setShowAccountCreationFailedToast(true);
+        } else {
+          setShowAccountCreatedToast(true);
+        }
+      });
+      e.preventDefault();
+      setValidated(true);
       handleCloseRegister();
     }
   }
@@ -58,10 +73,11 @@ function SignUpForm({ stationList, handleCloseRegister }) {
             placeholder="Enter your username"
             onChange={handleChange}
           />
+          <Form.Control.Feedback type="invalid">
+            Choississez un nom d'utilisateur.
+          </Form.Control.Feedback>
         </Form.Group>
-        <Form.Control.Feedback type="invalid">
-          Choississez un nom d'utilisateur.
-        </Form.Control.Feedback>
+
         <Form.Group className="mb-3" controlId="formPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
@@ -83,9 +99,9 @@ function SignUpForm({ stationList, handleCloseRegister }) {
             name="favorite_station"
             id="stations"
             onChange={handleChange}
-            defaultValue="nostation"
+            defaultValue=""
           >
-            <option value="nostation">Pas de station préférée</option>
+            <option value="">Choississez une station préférée</option>
             {stationList.map((station) => {
               return (
                 <option key={station.id} value={station.id}>
@@ -94,6 +110,9 @@ function SignUpForm({ stationList, handleCloseRegister }) {
               );
             })}
           </Form.Select>
+          <Form.Control.Feedback type="invalid">
+            Choississez une station préférée
+          </Form.Control.Feedback>
         </Form.Group>
       </Form>
     </>

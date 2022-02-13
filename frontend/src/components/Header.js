@@ -1,19 +1,56 @@
 import React from "react";
 import NavLink from "react-bootstrap/Nav";
-import AuthFunctions from "../Auth/auth-functions";
+
+import RegisterModal from "./RegisterModal";
+import LoginModal from "./LoginModal";
+import ProfileModal from "./ProfileModal";
 function Header({
   handleShowRegister,
+  handleCloseRegister,
+  showRegisterModal,
   handleShowSignIn,
+  handleCloseSignIn,
+  showSignInModal,
   handleShowProfile,
+  handleCloseProfile,
+  showProfileModal,
+  userInfo,
   loggedInUser,
   setLoggedInUser,
+  stationList,
+  setShowLogInToast,
+  logOut,
+  setShowAccountCreatedToast,
+  setShowAccountCreationFailedToast,
 }) {
-  function logOut() {
-    AuthFunctions.logout();
-    setLoggedInUser(null);
-  }
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <RegisterModal
+        handleShowRegisterModal={handleShowRegister}
+        handleCloseRegister={handleCloseRegister}
+        stationList={stationList}
+        showRegisterModal={showRegisterModal}
+        setShowAccountCreatedToast={setShowAccountCreatedToast}
+        setShowAccountCreationFailedToast={setShowAccountCreationFailedToast}
+      />
+      <LoginModal
+        handleShowSignIn={handleShowSignIn}
+        handleCloseSignIn={handleCloseSignIn}
+        showSignInModal={showSignInModal}
+        stationList={stationList}
+        setLoggedInUser={setLoggedInUser}
+        setShowLogInToast={setShowLogInToast}
+      />
+      {userInfo !== null && (
+        <ProfileModal
+          handleShowProfile={handleShowProfile}
+          handleCloseProfile={handleCloseProfile}
+          showProfileModal={showProfileModal}
+          stationList={stationList}
+          userInfo={userInfo}
+        />
+      )}
+
       <NavLink className="navbar-brand" to="/#">
         Méteo Data
       </NavLink>

@@ -1,6 +1,7 @@
 
 from os import access
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class UserInfoBase(BaseModel):
@@ -29,9 +30,12 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+# https://stackoverflow.com/questions/68811220/handling-the-token-expiration-in-fastapi
+
 
 class TokenData(BaseModel):
     user: str
+    expires: datetime
 
 
 class TemperaturesBase(BaseModel):

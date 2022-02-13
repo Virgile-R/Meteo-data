@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 import bcrypt
 from fastapi.security import OAuth2PasswordBearer
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from postgres_database import models, schemas
 from dotenv import load_dotenv
 import jwt
@@ -44,13 +44,15 @@ def check_username_and_password(db: Session, username: str, password: str):
 def create_jwt_token(*, data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, os.getenv(
         "SECRET_KEY"), algorithm=os.getenv("ALGORITHM"))
     return encoded_jwt
+
+# https://stackoverflow.com/questions/68811220/handling-the-token-expiration-in-fastapi
 
 
 def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
@@ -64,17 +66,31 @@ def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    credentials_exception_expired = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token Expired",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
         payload = jwt.decode(token, os.getenv(
             "SECRET_KEY"), algorithms=[os.getenv("ALGORITHM")])
         username: str = payload.get("sub")
-
-        token_data = schemas.TokenData(user=username)
+        expires: datetime = payload.get("exp")
+        if username is None:
+            raise credentials_exception_not_found
+        token_data = schemas.TokenData(user=username, expires=expires)
         user = get_user(db, username=token_data.user)
 
         if user is None:
             raise credentials_exception_not_found
+
+        if expires is None:
+            raise credentials_exception_invalid
+        if datetime.now(timezone.utc) > token_data.expires:
+            raise credentials_exception_expired
         return user
+    except jwt.exceptions.ExpiredSignatureError:
+        raise credentials_exception_expired
     except jwt.exceptions.InvalidTokenError:
         raise credentials_exception_invalid
 
