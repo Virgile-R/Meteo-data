@@ -17,6 +17,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000"
+    "https://meteo-data.vercel.app/"
 ]
 app.add_middleware(
     CORSMiddleware,
