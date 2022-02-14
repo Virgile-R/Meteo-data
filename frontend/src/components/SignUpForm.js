@@ -6,6 +6,7 @@ function SignUpForm({
   handleCloseRegister,
   setShowAccountCreatedToast,
   setShowAccountCreationFailedToast,
+  setShowEmailAlreadyExists,
 }) {
   const [inputs, setInputs] = useState({});
   const [validated, setValidated] = useState(false);
@@ -35,7 +36,14 @@ function SignUpForm({
         requestOptions
       ).then((res) => {
         if (res.status !== 200) {
-          setShowAccountCreationFailedToast(true);
+          res.json().then((data) => {
+            console.log(data.detail);
+            if (data.detail === "An account with this email already exists") {
+              setShowEmailAlreadyExists(true);
+            } else {
+              setShowAccountCreationFailedToast(true);
+            }
+          });
         } else {
           setShowAccountCreatedToast(true);
         }

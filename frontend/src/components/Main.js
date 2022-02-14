@@ -25,6 +25,7 @@ function Main({ stationList, selectedStation, handleChange }) {
   const handleShowSignIn = () => setSignInshowModal(true);
   const handleCloseProfile = () => setProfileshowModal(false);
   const handleShowProfile = () => setProfileshowModal(true);
+  const [showEmailAlreadyExists, setShowEmailAlreadyExists] = useState(false);
   const logOut = () => {
     AuthFunctions.logout();
     setLoggedInUser(null);
@@ -55,6 +56,24 @@ function Main({ stationList, selectedStation, handleChange }) {
   return (
     <div className="wrapper">
       <div>
+        <ToastContainer position="middle-center">
+          <Toast
+            delay={3000}
+            show={showEmailAlreadyExists}
+            autohide
+            onClose={() => setShowEmailAlreadyExists(false)}
+            bg="warning"
+          >
+            <Toast.Header>
+              {" "}
+              <strong className="me-auto">
+                {" "}
+                Email déjà associé à un compte
+              </strong>
+            </Toast.Header>
+            <Toast.Body>Veuillez choisir un autre email</Toast.Body>
+          </Toast>
+        </ToastContainer>
         <ToastContainer position="middle-center">
           <Toast
             delay={3000}
@@ -135,6 +154,7 @@ function Main({ stationList, selectedStation, handleChange }) {
           logOut={logOut}
           setShowAccountCreatedToast={setShowAccountCreatedToast}
           setShowAccountCreationFailedToast={setShowAccountCreationFailedToast}
+          setShowEmailAlreadyExists={setShowEmailAlreadyExists}
         ></Header>
         <SearchForm
           stationList={stationList}

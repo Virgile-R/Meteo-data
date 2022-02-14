@@ -23,6 +23,7 @@ function Header({
   logOut,
   setShowAccountCreatedToast,
   setShowAccountCreationFailedToast,
+  setShowEmailAlreadyExists,
 }) {
   return (
     <Navbar bg="light" expand>
@@ -33,6 +34,7 @@ function Header({
         showRegisterModal={showRegisterModal}
         setShowAccountCreatedToast={setShowAccountCreatedToast}
         setShowAccountCreationFailedToast={setShowAccountCreationFailedToast}
+        setShowEmailAlreadyExists={setShowEmailAlreadyExists}
       />
       <LoginModal
         handleShowSignIn={handleShowSignIn}

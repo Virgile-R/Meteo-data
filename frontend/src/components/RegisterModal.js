@@ -9,6 +9,7 @@ function RegisterModal({
   showRegisterModal,
   setShowAccountCreatedToast,
   setShowAccountCreationFailedToast,
+  setShowEmailAlreadyExists,
 }) {
   return (
     <Modal
@@ -26,6 +27,7 @@ function RegisterModal({
           handleCloseRegister={handleCloseRegister}
           setShowAccountCreatedToast={setShowAccountCreatedToast}
           setShowAccountCreationFailedToast={setShowAccountCreationFailedToast}
+          setShowEmailAlreadyExists={setShowEmailAlreadyExists}
         ></SignUpForm>
       </Modal.Body>
       <Modal.Footer>
