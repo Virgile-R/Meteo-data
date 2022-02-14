@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # defines a SQLDatabase Adress (defined in environnement variable for dev)
-SQLALCHEMY_DATABASE_URL = os.getenv('DATABASE_URL')
+SQLALCHEMY_DATABASE_URL = os.getenv('DATABASE_URL').replace("://", "ql://", 1)
 
 # creates an SQLAlchemy engine
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
