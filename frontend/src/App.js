@@ -31,7 +31,6 @@ function App() {
     return (
       <Main
         stationList={stations}
-        setSelectedStation={setSelectedStation}
         selectedStation={selectedStation}
         handleChange={handleChange}
       />

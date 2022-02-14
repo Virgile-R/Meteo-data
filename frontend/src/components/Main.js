@@ -88,10 +88,12 @@ function Main({ stationList, selectedStation, handleChange }) {
               {" "}
               <strong className="me-auto">
                 {" "}
-                Email déjà associé à un compte
+                Email ou nom d'utilisateur déjà associé à un compte
               </strong>
             </Toast.Header>
-            <Toast.Body>Veuillez choisir un autre email</Toast.Body>
+            <Toast.Body>
+              Veuillez choisir un autre email ou nom d'utilisateur
+            </Toast.Body>
           </Toast>
         </ToastContainer>
         <ToastContainer position="middle-center">
