@@ -29,6 +29,7 @@ function Main({ stationList, selectedStation, handleChange }) {
     AuthFunctions.logout();
     setLoggedInUser(null);
     setUserInfo(null);
+    setShowTimeOutToast(true);
   };
   useEffect(() => {
     if (loggedInUser) {
