@@ -24,6 +24,7 @@ function Header({
   setShowAccountCreatedToast,
   setShowAccountCreationFailedToast,
   setShowEmailAlreadyExists,
+  setShowInvalidUsernameOrPassword,
 }) {
   return (
     <Navbar bg="light" expand>
@@ -43,6 +44,7 @@ function Header({
         stationList={stationList}
         setLoggedInUser={setLoggedInUser}
         setShowLogInToast={setShowLogInToast}
+        setShowInvalidUsernameOrPassword={setShowInvalidUsernameOrPassword}
       />
       {userInfo !== null && (
         <ProfileModal

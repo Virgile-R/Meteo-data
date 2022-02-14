@@ -18,6 +18,9 @@ function Main({ stationList, selectedStation, handleChange }) {
   const [showAccountCreatedToast, setShowAccountCreatedToast] = useState(false);
   const [showAccountCreationFailedToast, setShowAccountCreationFailedToast] =
     useState(false);
+  const [showInvalidUsernameOrPassword, setShowInvalidUsernameOrPassword] =
+    useState(false);
+  const [showEmailAlreadyExists, setShowEmailAlreadyExists] = useState(false);
 
   const handleCloseRegister = () => setRegistershowModal(false);
   const handleShowRegister = () => setRegistershowModal(true);
@@ -25,12 +28,13 @@ function Main({ stationList, selectedStation, handleChange }) {
   const handleShowSignIn = () => setSignInshowModal(true);
   const handleCloseProfile = () => setProfileshowModal(false);
   const handleShowProfile = () => setProfileshowModal(true);
-  const [showEmailAlreadyExists, setShowEmailAlreadyExists] = useState(false);
+
   const logOut = () => {
     AuthFunctions.logout();
     setLoggedInUser(null);
     setUserInfo(null);
   };
+
   useEffect(() => {
     if (loggedInUser) {
       fetch(`${process.env.REACT_APP_API_URL}/user`, {
@@ -40,7 +44,6 @@ function Main({ stationList, selectedStation, handleChange }) {
         .catch((err) => console.error(err))
         .then((res) => {
           if (res.status === 401) {
-            console.log("There was an error");
             setShowTimeOutToast(true);
             logOut();
           } else {
@@ -56,6 +59,23 @@ function Main({ stationList, selectedStation, handleChange }) {
   return (
     <div className="wrapper">
       <div>
+        <ToastContainer position="middle-center">
+          <Toast
+            delay={3000}
+            show={showInvalidUsernameOrPassword}
+            autohide
+            onClose={() => setShowInvalidUsernameOrPassword(false)}
+            bg="warning"
+          >
+            <Toast.Header>
+              {" "}
+              <strong className="me-auto"> Problème d'identification</strong>
+            </Toast.Header>
+            <Toast.Body>
+              Veuillez vérifier votre nom d'utilisateur et votre mot de passe
+            </Toast.Body>
+          </Toast>
+        </ToastContainer>
         <ToastContainer position="middle-center">
           <Toast
             delay={3000}
@@ -155,6 +175,7 @@ function Main({ stationList, selectedStation, handleChange }) {
           setShowAccountCreatedToast={setShowAccountCreatedToast}
           setShowAccountCreationFailedToast={setShowAccountCreationFailedToast}
           setShowEmailAlreadyExists={setShowEmailAlreadyExists}
+          setShowInvalidUsernameOrPassword={setShowInvalidUsernameOrPassword}
         ></Header>
         <SearchForm
           stationList={stationList}

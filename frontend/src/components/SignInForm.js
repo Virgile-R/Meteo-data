@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import AuthFunctions from "../Auth/auth-functions";
 
-function SignInForm({ handleCloseSignIn, setLoggedInUser, setShowLogInToast }) {
+function SignInForm({
+  handleCloseSignIn,
+  setLoggedInUser,
+  setShowLogInToast,
+  setShowInvalidUsernameOrPassword,
+}) {
   const [inputs, setInputs] = useState({});
   const [validated, setValidated] = useState(false);
 
@@ -30,15 +35,15 @@ function SignInForm({ handleCloseSignIn, setLoggedInUser, setShowLogInToast }) {
 
       fetch(`${process.env.REACT_APP_API_URL}/token`, requestOptions).then(
         (response) => {
-          response
-            .json()
-            .then((response) =>
-              localStorage.setItem("user", JSON.stringify(response))
-            )
-            .finally(() => {
+          response.json().then((response) => {
+            if (response.detail === "Incorrect username or password") {
+              setShowInvalidUsernameOrPassword(true);
+            } else {
+              localStorage.setItem("user", JSON.stringify(response));
               setShowLogInToast(true);
               setLoggedInUser(AuthFunctions.get_current_user());
-            });
+            }
+          });
         }
       );
       handleCloseSignIn();

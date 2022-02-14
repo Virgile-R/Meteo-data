@@ -10,6 +10,7 @@ function LoginModal({
   stationList,
   setLoggedInUser,
   setShowLogInToast,
+  setShowInvalidUsernameOrPassword,
 }) {
   return (
     <Modal
@@ -27,6 +28,7 @@ function LoginModal({
           stationList={stationList}
           setLoggedInUser={setLoggedInUser}
           setShowLogInToast={setShowLogInToast}
+          setShowInvalidUsernameOrPassword={setShowInvalidUsernameOrPassword}
         ></SignInForm>
       </Modal.Body>
       <Modal.Footer>
