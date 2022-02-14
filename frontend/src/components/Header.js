@@ -4,6 +4,7 @@ import NavLink from "react-bootstrap/Nav";
 import RegisterModal from "./RegisterModal";
 import LoginModal from "./LoginModal";
 import ProfileModal from "./ProfileModal";
+import Navbar from "react-bootstrap/Navbar";
 function Header({
   handleShowRegister,
   handleCloseRegister,
@@ -24,7 +25,7 @@ function Header({
   setShowAccountCreationFailedToast,
 }) {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <Navbar bg="light" expand>
       <RegisterModal
         handleShowRegisterModal={handleShowRegister}
         handleCloseRegister={handleCloseRegister}
@@ -54,17 +55,7 @@ function Header({
       <NavLink className="navbar-brand" to="/#">
         Méteo Data
       </NavLink>
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarText"
-        aria-controls="navbarText"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon" />
-      </button>
+
       <div className="collapse navbar-collapse text-center" id="navbarText">
         {!loggedInUser ? (
           <>
@@ -98,7 +89,7 @@ function Header({
           </>
         )}
       </div>
-    </nav>
+    </Navbar>
   );
 }
 
