@@ -29,7 +29,6 @@ function Main({ stationList, selectedStation, handleChange }) {
     AuthFunctions.logout();
     setLoggedInUser(null);
     setUserInfo(null);
-    setShowTimeOutToast(true);
   };
   useEffect(() => {
     if (loggedInUser) {
@@ -41,6 +40,7 @@ function Main({ stationList, selectedStation, handleChange }) {
         .then((res) => {
           if (res.status === 401) {
             console.log("There was an error");
+            setShowTimeOutToast(true);
             logOut();
           } else {
             return res.json();
