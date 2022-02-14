@@ -21,7 +21,6 @@ function SignUpForm({
     const form = e.currentTarget;
 
     if (form.checkValidity() === false) {
-      setValidated(false);
       e.stopPropagation();
       e.preventDefault();
     } else {
@@ -42,9 +41,10 @@ function SignUpForm({
         }
       });
       e.preventDefault();
-      setValidated(true);
+
       handleCloseRegister();
     }
+    setValidated(true);
   }
   return (
     <>

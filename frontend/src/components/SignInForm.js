@@ -22,7 +22,7 @@ function SignInForm({ handleCloseSignIn, setLoggedInUser, setShowLogInToast }) {
       for (const name in inputs) {
         formData.append(name, inputs[name]);
       }
-      setValidated(true);
+
       const requestOptions = {
         method: "POST",
         body: formData,
@@ -43,6 +43,7 @@ function SignInForm({ handleCloseSignIn, setLoggedInUser, setShowLogInToast }) {
       );
       handleCloseSignIn();
     }
+    setValidated(true);
   }
   return (
     <Form noValidate validated={validated} id="signInForm" onSubmit={onSubmit}>
@@ -56,7 +57,7 @@ function SignInForm({ handleCloseSignIn, setLoggedInUser, setShowLogInToast }) {
           onChange={handleChange}
         />
         <Form.Control.Feedback type="invalid">
-          Choississez un nom d'utilisateur.
+          Entrez votre nom d'utilisateur.
         </Form.Control.Feedback>
       </Form.Group>
 
